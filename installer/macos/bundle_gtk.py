@@ -14,7 +14,8 @@ PREFIX = "/usr/local"
 GTK_LIB = "/usr/local/lib/libgtk-3.dylib"
 RSVG_LIB = "/usr/local/lib/librsvg-2.2.dylib"
 TIFF_LIB = "/usr/local/lib/libtiff.5.dylib"
-ROOT_LIBS = [GTK_LIB, RSVG_LIB, TIFF_LIB]
+WEBP_LIB = "/usr/local/lib/libwebp.7.dylib"
+ROOT_LIBS = [GTK_LIB, RSVG_LIB, TIFF_LIB, WEBP_LIB]
 
 ADWAITA_THEME = "/usr/local/share/icons/Adwaita/index.theme"
 PIXBUF_LOADERS = "lib/gdk-pixbuf-2.0/2.10.0"
@@ -49,6 +50,12 @@ def collect_libs(src_lib, lib_deps):
     lib_deps[src_lib] = referenced_paths
 
     for lib in real_lib_paths:
+
+        # libpixbufloader-webp.so has an install name of
+        # libpixbufloader-webp.dylib, which won't be found
+        if os.path.basename(lib) == "libpixbufloader-webp.dylib":
+            continue
+
         if lib not in lib_deps:
             collect_libs(lib, lib_deps)
 

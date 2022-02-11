@@ -58,7 +58,7 @@ jobs:
       with:
         dotnet-version: ${{env.DOTNET_VERSION}}
     - name: Install Dependencies
-      run: brew install gtk+3 adwaita-icon-theme gettext
+      run: brew install gtk+3 adwaita-icon-theme gettext webp-pixbuf-loader
     - name: Build
       run: dotnet build Pinta.sln --configuration Release
     - name: Test

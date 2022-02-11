@@ -41,7 +41,7 @@ For building on the command line:
 ## Building on macOS
 
 - Install .NET 6 and GTK
-  - `brew install dotnet-sdk gtk+3 adwaita-icon-theme gettext`
+  - `brew install dotnet-sdk gtk+3 adwaita-icon-theme gettext webp-pixbuf-loader`
 - Build:
   - `dotnet build`
 - Run:
