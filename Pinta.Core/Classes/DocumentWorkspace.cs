@@ -156,7 +156,7 @@ namespace Pinta.Core
 			var winTopLeft = CanvasPointToView (canvasTopLeft.X, canvasTopLeft.Y);
 			var winBtmRight = CanvasPointToView (canvasBtmRight.X, canvasBtmRight.Y);
 
-			RectangleI winRect = CairoExtensions.PointsToRectangle (winTopLeft, winBtmRight).ToInt ();
+			RectangleI winRect = RectangleD.FromPoints (winTopLeft, winBtmRight).ToInt ();
 
 			OnCanvasInvalidated (new CanvasInvalidatedEventArgs (winRect));
 		}
