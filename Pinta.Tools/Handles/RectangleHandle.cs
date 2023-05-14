@@ -14,7 +14,7 @@ namespace Pinta.Tools.Handles
 		private PointD start_pt = PointD.Zero;
 		private PointD end_pt = PointD.Zero;
 		private Size image_size = Size.Empty;
-		private readonly MoveHandle[] handles = new MoveHandle[8];
+		private readonly MoveHandle[] handles = new MoveHandle[9];
 		private MoveHandle? active_handle = null;
 		private PointD? drag_start_pos = null;
 
@@ -28,6 +28,7 @@ namespace Pinta.Tools.Handles
 			handles[5] = new MoveHandle { CursorName = StandardCursors.ResizeN };
 			handles[6] = new MoveHandle { CursorName = StandardCursors.ResizeE };
 			handles[7] = new MoveHandle { CursorName = StandardCursors.ResizeS };
+			handles[8] = new MoveHandle { CursorName = StandardCursors.Move };
 
 			foreach (var handle in handles)
 				handle.Active = true;
@@ -39,7 +40,8 @@ namespace Pinta.Tools.Handles
 		public void Draw (Context cr)
 		{
 			foreach (MoveHandle handle in handles) {
-				handle.Draw (cr);
+				if (handle.Active)
+					handle.Draw (cr);
 			}
 		}
 		#endregion
@@ -50,6 +52,11 @@ namespace Pinta.Tools.Handles
 		/// producing an empty rectangle.
 		/// </summary>
 		public bool InvertIfNegative { get; set; }
+
+		/// <summary>
+		/// Enables translating the entire rectangle using a handle at the center.
+		/// </summary>
+		public bool EnableTranslation { get => handles[8].Active; set => handles[8].Active = value; }
 
 		/// <summary>
 		/// Bounding rectangle to use with InvalidateWindowRect() when triggering a redraw.
@@ -153,7 +160,7 @@ namespace Pinta.Tools.Handles
 		/// Name of the cursor to display, if the cursor is over a corner of the rectangle.
 		/// </summary>
 		public string? GetCursorAtPoint (PointD view_pos)
-			=> handles.FirstOrDefault (c => c.ContainsPoint (view_pos))?.CursorName;
+			=> handles.FirstOrDefault (c => c.Active && c.ContainsPoint (view_pos))?.CursorName;
 
 		private void UpdateHandlePositions ()
 		{
@@ -167,11 +174,12 @@ namespace Pinta.Tools.Handles
 			handles[5].CanvasPosition = new PointD (center.X, rect.Top);
 			handles[6].CanvasPosition = new PointD (rect.Right, center.Y);
 			handles[7].CanvasPosition = new PointD (center.X, rect.Bottom);
+			handles[8].CanvasPosition = center;
 		}
 
 		private void UpdateHandleUnderPoint (PointD view_pos)
 		{
-			active_handle = handles.FirstOrDefault (c => c.ContainsPoint (view_pos));
+			active_handle = handles.FirstOrDefault (c => c.Active && c.ContainsPoint (view_pos));
 
 			// If the rectangle is empty (e.g. starting a new drag), all the handles are
 			// at the same position so pick the bottom right corner.
@@ -255,6 +263,12 @@ namespace Pinta.Tools.Handles
 						start_pt.X = (start_pt.X + end_pt.X - d) / 2;
 						end_pt.X = (start_pt.X + end_pt.X + d) / 2;
 					}
+					break;
+				case 8:
+					double width = end_pt.X - start_pt.X;
+					double height = end_pt.Y - start_pt.Y;
+					start_pt = new (x - 0.5 * width, y - 0.5 * height);
+					end_pt = new (x + 0.5 * width, y + 0.5 * height);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException ("handle");

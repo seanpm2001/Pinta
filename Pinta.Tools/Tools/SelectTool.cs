@@ -43,7 +43,7 @@ namespace Pinta.Tools
 		private SelectionHistoryItem? hist;
 		private CombineMode combine_mode;
 
-		private readonly Handles.RectangleHandle handle = new () { InvertIfNegative = true };
+		private readonly Handles.RectangleHandle handle = new () { InvertIfNegative = true, EnableTranslation = true };
 		public override IEnumerable<IToolHandle> Handles => Enumerable.Repeat (handle, 1);
 
 		public override Gdk.Key ShortcutKey { get { return Gdk.Key.S; } }
