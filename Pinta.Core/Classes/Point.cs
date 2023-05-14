@@ -53,6 +53,8 @@ namespace Pinta.Core
 			this.Y = y;
 		}
 
+		public static readonly PointD Zero;
+
 		public double X;
 		public double Y;
 

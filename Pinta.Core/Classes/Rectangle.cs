@@ -48,6 +48,31 @@ namespace Pinta.Core
 		{
 		}
 
+		/// <summary>
+		/// Create a rectangle from the provided points.
+		/// </summary>
+		/// <param name="invert_if_negative">
+		/// Flips the start and end points if necessary to produce a rectangle with positive width and height.
+		/// Otherwise, a negative width or height is clamped to zero.
+		/// </param>
+		public static RectangleD FromPoints (in PointD start, in PointD end, bool invert_if_negative = false)
+		{
+			if (invert_if_negative) {
+				double y1 = Math.Min (start.Y, end.Y);
+				double y2 = Math.Max (start.Y, end.Y);
+				double x1 = Math.Min (start.X, end.X);
+				double x2 = Math.Max (start.X, end.X);
+				return new RectangleD (x1, y1, x2 - x1, y2 - y1);
+			} else {
+				return new RectangleD (start.X,
+					start.Y,
+					Math.Max (0.0, end.X - start.X),
+					Math.Max (0.0, end.Y - start.Y));
+			}
+		}
+
+		public static readonly RectangleD Zero;
+
 		public RectangleI ToInt () => new RectangleI ((int) Math.Floor (X), (int) Math.Floor (Y),
 							      (int) Math.Ceiling (Width), (int) Math.Ceiling (Height));
 
@@ -72,6 +97,7 @@ namespace Pinta.Core
 		public bool ContainsPoint (in PointD point) => ContainsPoint (point.X, point.Y);
 
 		public PointD Location () => new PointD (X, Y);
+		public PointD EndLocation () => new PointD (X + Width, Y + Height);
 		public PointD GetCenter () => new PointD (X + 0.5 * Width, Y + 0.5 * Height);
 
 		public void Inflate (double width, double height)
@@ -89,7 +115,7 @@ namespace Pinta.Core
 			return copy;
 		}
 
-		public RectangleD Clamp ()
+		public RectangleD ClampLocation ()
 		{
 			double x = this.X;
 			double y = this.Y;
